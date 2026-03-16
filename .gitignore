@@ -1,0 +1,15 @@
+﻿# dependencies
+node_modules/
+
+# logs
+*.log
+
+# OS/editor
+.DS_Store
+Thumbs.db
+.vscode/
+.cursor/
+
+# build outputs (if you add tooling later)
+dist/
+build/

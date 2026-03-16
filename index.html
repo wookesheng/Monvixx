@@ -1,0 +1,333 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Monvixx — Money Manager</title>
+    <meta name="description" content="Monvixx: a simple money manager and tracker." />
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo" aria-hidden="true">M</div>
+          <div class="brand__text">
+            <div class="brand__name">Monvixx</div>
+            <div class="brand__tag">Money manager & tracker</div>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Primary">
+          <button class="tab" data-route="dashboard" aria-current="page">Dashboard</button>
+          <button class="tab" data-route="transactions">Transactions</button>
+          <button class="tab" data-route="budgets">Budgets</button>
+          <button class="tab" data-route="settings">Settings</button>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="container main">
+      <section class="route" data-view="dashboard">
+        <div class="grid grid--2">
+          <section class="card">
+            <header class="card__header">
+              <h2 class="card__title">This month</h2>
+              <div class="card__actions">
+                <label class="select">
+                  <span class="sr-only">Month</span>
+                  <select id="monthSelect"></select>
+                </label>
+              </div>
+            </header>
+            <div class="stats">
+              <div class="stat">
+                <div class="stat__label">Income</div>
+                <div class="stat__value" id="statIncome">$0</div>
+              </div>
+              <div class="stat">
+                <div class="stat__label">Expenses</div>
+                <div class="stat__value stat__value--danger" id="statExpenses">$0</div>
+              </div>
+              <div class="stat">
+                <div class="stat__label">Net</div>
+                <div class="stat__value" id="statNet">$0</div>
+              </div>
+            </div>
+            <div class="divider"></div>
+            <div class="progress">
+              <div class="progress__row">
+                <div>
+                  <div class="progress__label">Budget used</div>
+                  <div class="progress__meta" id="budgetMeta">No budgets yet</div>
+                </div>
+                <div class="pill" id="budgetPill">—</div>
+              </div>
+              <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Budget usage">
+                <div class="bar__fill" id="budgetBar" style="width: 0%"></div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <header class="card__header">
+              <h2 class="card__title">Quick add</h2>
+              <div class="card__subtitle">Capture a transaction in seconds.</div>
+            </header>
+
+            <form id="quickAddForm" class="form">
+              <div class="grid grid--2">
+                <label class="field">
+                  <span class="field__label">Type</span>
+                  <select name="type" required>
+                    <option value="expense" selected>Expense</option>
+                    <option value="income">Income</option>
+                  </select>
+                </label>
+                <label class="field">
+                  <span class="field__label">Amount</span>
+                  <input name="amount" inputmode="decimal" placeholder="0.00" required />
+                </label>
+              </div>
+
+              <label class="field">
+                <span class="field__label">Category</span>
+                <select name="category" id="quickAddCategory"></select>
+              </label>
+
+              <label class="field">
+                <span class="field__label">Note</span>
+                <input name="note" maxlength="120" placeholder="e.g. groceries, salary" />
+              </label>
+
+              <div class="grid grid--2">
+                <label class="field">
+                  <span class="field__label">Date</span>
+                  <input name="date" type="date" required />
+                </label>
+                <label class="field">
+                  <span class="field__label">Payment method</span>
+                  <select name="method">
+                    <option value="cash">Cash</option>
+                    <option value="card" selected>Card</option>
+                    <option value="transfer">Transfer</option>
+                    <option value="other">Other</option>
+                  </select>
+                </label>
+              </div>
+
+              <div class="actions">
+                <button type="submit" class="btn btn--primary">Add</button>
+                <button type="button" class="btn" id="quickAddToTransactions">View all</button>
+              </div>
+              <p class="hint" id="quickAddHint" role="status" aria-live="polite"></p>
+            </form>
+          </section>
+        </div>
+
+        <section class="card">
+          <header class="card__header">
+            <h2 class="card__title">Top spending (month)</h2>
+            <div class="card__subtitle">By category.</div>
+          </header>
+          <div id="topSpending" class="list list--striped"></div>
+          <p class="empty" id="topSpendingEmpty">No expenses in this month yet.</p>
+        </section>
+      </section>
+
+      <section class="route" data-view="transactions" hidden>
+        <section class="card">
+          <header class="card__header">
+            <h2 class="card__title">Transactions</h2>
+            <div class="card__subtitle">Search, filter, edit, delete.</div>
+          </header>
+
+          <div class="filters">
+            <label class="field field--inline">
+              <span class="field__label">Search</span>
+              <input id="txSearch" placeholder="note, category…" />
+            </label>
+            <label class="field field--inline">
+              <span class="field__label">Type</span>
+              <select id="txType">
+                <option value="all" selected>All</option>
+                <option value="expense">Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </label>
+            <label class="field field--inline">
+              <span class="field__label">Category</span>
+              <select id="txCategory"></select>
+            </label>
+            <label class="field field--inline">
+              <span class="field__label">Month</span>
+              <select id="txMonth"></select>
+            </label>
+            <button class="btn btn--ghost" id="txClearFilters" type="button">Clear</button>
+            <div class="spacer"></div>
+            <button class="btn btn--primary" id="txNew" type="button">New transaction</button>
+          </div>
+
+          <div class="tablewrap">
+            <table class="table" aria-label="Transactions table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Note</th>
+                  <th class="num">Amount</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="txTableBody"></tbody>
+            </table>
+          </div>
+          <p class="empty" id="txEmpty">No transactions match your filters.</p>
+        </section>
+      </section>
+
+      <section class="route" data-view="budgets" hidden>
+        <section class="card">
+          <header class="card__header">
+            <h2 class="card__title">Budgets</h2>
+            <div class="card__subtitle">Set monthly limits per category (expenses only).</div>
+          </header>
+
+          <form id="budgetForm" class="form form--row">
+            <label class="field">
+              <span class="field__label">Category</span>
+              <select id="budgetCategory" required></select>
+            </label>
+            <label class="field">
+              <span class="field__label">Monthly limit</span>
+              <input id="budgetAmount" inputmode="decimal" placeholder="0.00" required />
+            </label>
+            <button class="btn btn--primary" type="submit">Save budget</button>
+            <p class="hint" id="budgetHint" role="status" aria-live="polite"></p>
+          </form>
+
+          <div class="divider"></div>
+          <div id="budgetList" class="list"></div>
+          <p class="empty" id="budgetEmpty">No budgets yet. Add one above.</p>
+        </section>
+      </section>
+
+      <section class="route" data-view="settings" hidden>
+        <section class="card">
+          <header class="card__header">
+            <h2 class="card__title">Settings</h2>
+            <div class="card__subtitle">Data, currency, and backup.</div>
+          </header>
+
+          <div class="grid grid--2">
+            <section class="panel">
+              <h3 class="panel__title">Preferences</h3>
+              <label class="field">
+                <span class="field__label">Currency</span>
+                <select id="currency">
+                  <option value="USD" selected>USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="IDR">IDR (Rp)</option>
+                  <option value="JPY">JPY (¥)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field__label">Start of week</span>
+                <select id="weekStart">
+                  <option value="1" selected>Monday</option>
+                  <option value="0">Sunday</option>
+                </select>
+              </label>
+              <button class="btn" id="savePrefs" type="button">Save</button>
+              <p class="hint" id="prefsHint" role="status" aria-live="polite"></p>
+            </section>
+
+            <section class="panel">
+              <h3 class="panel__title">Backup</h3>
+              <div class="actions">
+                <button class="btn btn--primary" id="exportJson" type="button">Export JSON</button>
+                <label class="btn btn--ghost filebtn">
+                  Import JSON
+                  <input id="importJson" type="file" accept="application/json" />
+                </label>
+              </div>
+              <p class="hint">Export is a full backup. Import will merge by ID.</p>
+            </section>
+          </div>
+
+          <div class="divider"></div>
+          <section class="danger">
+            <h3 class="danger__title">Danger zone</h3>
+            <p class="danger__text">This permanently deletes all your local Monvixx data on this browser.</p>
+            <button class="btn btn--danger" id="wipeAll" type="button">Wipe all data</button>
+            <p class="hint" id="wipeHint" role="status" aria-live="polite"></p>
+          </section>
+        </section>
+      </section>
+    </main>
+
+    <dialog id="txDialog" class="dialog">
+      <form method="dialog" class="dialog__card" id="txDialogForm">
+        <header class="dialog__header">
+          <h2 class="dialog__title" id="txDialogTitle">New transaction</h2>
+          <button class="iconbtn" value="cancel" aria-label="Close dialog" type="submit">✕</button>
+        </header>
+
+        <div class="dialog__body">
+          <input type="hidden" name="id" />
+          <div class="grid grid--2">
+            <label class="field">
+              <span class="field__label">Type</span>
+              <select name="type" required>
+                <option value="expense" selected>Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Amount</span>
+              <input name="amount" inputmode="decimal" placeholder="0.00" required />
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Category</span>
+            <select name="category" id="txDialogCategory" required></select>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Note</span>
+            <input name="note" maxlength="120" placeholder="Optional" />
+          </label>
+
+          <div class="grid grid--2">
+            <label class="field">
+              <span class="field__label">Date</span>
+              <input name="date" type="date" required />
+            </label>
+            <label class="field">
+              <span class="field__label">Payment method</span>
+              <select name="method">
+                <option value="cash">Cash</option>
+                <option value="card" selected>Card</option>
+                <option value="transfer">Transfer</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <footer class="dialog__footer">
+          <button class="btn" value="cancel" type="submit">Cancel</button>
+          <button class="btn btn--primary" id="txDialogSave" value="default" type="submit">Save</button>
+          <p class="hint" id="txDialogHint" role="status" aria-live="polite"></p>
+        </footer>
+      </form>
+    </dialog>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
