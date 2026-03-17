@@ -1,0 +1,145 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Transactions — Monvixx</title>
+    <meta name="description" content="Monvixx: search, filter, edit, and delete transactions." />
+    <link rel="stylesheet" href="CSS/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo" aria-hidden="true">M</div>
+          <div class="brand__text">
+            <div class="brand__name">Monvixx</div>
+            <div class="brand__tag">Money manager & tracker</div>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Primary">
+          <a class="tab" href="./index.html">Dashboard</a>
+          <a class="tab" href="./transactions.html" aria-current="page">Transactions</a>
+          <a class="tab" href="./budgets.html">Budgets</a>
+          <a class="tab" href="./settings.html">Settings</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="container main">
+      <section class="card">
+        <header class="card__header">
+          <h2 class="card__title">Transactions</h2>
+          <div class="card__subtitle">Search, filter, edit, delete.</div>
+        </header>
+
+        <div class="filters">
+          <label class="field field--inline">
+            <span class="field__label">Search</span>
+            <input id="txSearch" placeholder="note, category…" />
+          </label>
+          <label class="field field--inline">
+            <span class="field__label">Type</span>
+            <select id="txType">
+              <option value="all" selected>All</option>
+              <option value="expense">Expense</option>
+              <option value="income">Income</option>
+            </select>
+          </label>
+          <label class="field field--inline">
+            <span class="field__label">Category</span>
+            <select id="txCategory"></select>
+          </label>
+          <label class="field field--inline">
+            <span class="field__label">Month</span>
+            <select id="txMonth"></select>
+          </label>
+          <button class="btn btn--ghost" id="txClearFilters" type="button">Clear</button>
+          <div class="spacer"></div>
+          <button class="btn btn--primary" id="txNew" type="button">New transaction</button>
+        </div>
+
+        <div class="tablewrap">
+          <table class="table" aria-label="Transactions table">
+            <thead>
+              <tr>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Category</th>
+                <th>Note</th>
+                <th class="num">Amount</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody id="txTableBody"></tbody>
+          </table>
+        </div>
+        <p class="empty" id="txEmpty">No transactions match your filters.</p>
+      </section>
+    </main>
+
+    <dialog id="txDialog" class="dialog">
+      <form method="dialog" class="dialog__card" id="txDialogForm">
+        <header class="dialog__header">
+          <h2 class="dialog__title" id="txDialogTitle">New transaction</h2>
+          <button class="iconbtn" value="cancel" aria-label="Close dialog" type="submit">✕</button>
+        </header>
+
+        <div class="dialog__body">
+          <input type="hidden" name="id" />
+          <div class="grid grid--2">
+            <label class="field">
+              <span class="field__label">Type</span>
+              <select name="type" required>
+                <option value="expense" selected>Expense</option>
+                <option value="income">Income</option>
+              </select>
+            </label>
+            <label class="field">
+              <span class="field__label">Amount</span>
+              <input name="amount" inputmode="decimal" placeholder="0.00" required />
+            </label>
+          </div>
+
+          <label class="field">
+            <span class="field__label">Category</span>
+            <select name="category" id="txDialogCategory" required></select>
+          </label>
+
+          <label class="field">
+            <span class="field__label">Note</span>
+            <input name="note" maxlength="120" placeholder="Optional" />
+          </label>
+
+          <div class="grid grid--2">
+            <label class="field">
+              <span class="field__label">Date</span>
+              <input name="date" type="date" required />
+            </label>
+            <label class="field">
+              <span class="field__label">Payment method</span>
+              <select name="method">
+                <option value="cash">Cash</option>
+                <option value="card" selected>Card</option>
+                <option value="transfer">Transfer</option>
+                <option value="other">Other</option>
+              </select>
+            </label>
+          </div>
+        </div>
+
+        <footer class="dialog__footer">
+          <button class="btn" value="cancel" type="submit">Cancel</button>
+          <button class="btn btn--primary" id="txDialogSave" value="default" type="submit">Save</button>
+          <p class="hint" id="txDialogHint" role="status" aria-live="polite"></p>
+        </footer>
+      </form>
+    </dialog>
+
+    <script type="module" src="./js/pages/transactions.js"></script>
+  </body>
+</html>
+

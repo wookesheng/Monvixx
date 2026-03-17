@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Budgets — Monvixx</title>
+    <meta name="description" content="Monvixx: set and track monthly budgets per category." />
+    <link rel="stylesheet" href="CSS/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo" aria-hidden="true">M</div>
+          <div class="brand__text">
+            <div class="brand__name">Monvixx</div>
+            <div class="brand__tag">Money manager & tracker</div>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Primary">
+          <a class="tab" href="./index.html">Dashboard</a>
+          <a class="tab" href="./transactions.html">Transactions</a>
+          <a class="tab" href="./budgets.html" aria-current="page">Budgets</a>
+          <a class="tab" href="./settings.html">Settings</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="container main">
+      <section class="card">
+        <header class="card__header">
+          <h2 class="card__title">Budgets</h2>
+          <div class="card__subtitle">Set monthly limits per category (expenses only).</div>
+        </header>
+
+        <form id="budgetForm" class="form form--row">
+          <label class="field">
+            <span class="field__label">Category</span>
+            <select id="budgetCategory" required></select>
+          </label>
+          <label class="field">
+            <span class="field__label">Monthly limit</span>
+            <input id="budgetAmount" inputmode="decimal" placeholder="0.00" required />
+          </label>
+          <button class="btn btn--primary" type="submit">Save budget</button>
+          <p class="hint" id="budgetHint" role="status" aria-live="polite"></p>
+        </form>
+
+        <div class="divider"></div>
+        <div id="budgetList" class="list"></div>
+        <p class="empty" id="budgetEmpty">No budgets yet. Add one above.</p>
+      </section>
+    </main>
+
+    <script type="module" src="./js/pages/budgets.js"></script>
+  </body>
+</html>
+

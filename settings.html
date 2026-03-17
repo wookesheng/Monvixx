@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Settings — Monvixx</title>
+    <meta name="description" content="Monvixx settings: preferences, categories, and backup." />
+    <link rel="stylesheet" href="CSS/styles.css" />
+  </head>
+  <body>
+    <a class="skip-link" href="#main">Skip to content</a>
+
+    <header class="topbar">
+      <div class="container topbar__inner">
+        <div class="brand">
+          <div class="brand__logo" aria-hidden="true">M</div>
+          <div class="brand__text">
+            <div class="brand__name">Monvixx</div>
+            <div class="brand__tag">Money manager & tracker</div>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Primary">
+          <a class="tab" href="./index.html">Dashboard</a>
+          <a class="tab" href="./transactions.html">Transactions</a>
+          <a class="tab" href="./budgets.html">Budgets</a>
+          <a class="tab" href="./settings.html" aria-current="page">Settings</a>
+        </nav>
+      </div>
+    </header>
+
+    <main id="main" class="container main">
+      <section class="card">
+        <header class="card__header">
+          <h2 class="card__title">Settings</h2>
+          <div class="card__subtitle">Data, currency, and backup.</div>
+        </header>
+
+        <div class="settings-layout">
+          <div class="settings-col">
+            <section class="panel">
+              <h3 class="panel__title">Preferences</h3>
+              <label class="field">
+                <span class="field__label">Currency</span>
+                <select id="currency">
+                  <option value="USD" selected>USD ($)</option>
+                  <option value="EUR">EUR (€)</option>
+                  <option value="GBP">GBP (£)</option>
+                  <option value="IDR">IDR (Rp)</option>
+                  <option value="JPY">JPY (¥)</option>
+                </select>
+              </label>
+              <label class="field">
+                <span class="field__label">Start of week</span>
+                <select id="weekStart">
+                  <option value="1" selected>Monday</option>
+                  <option value="0">Sunday</option>
+                </select>
+              </label>
+              <div class="actions">
+                <button class="btn" id="savePrefs" type="button">Save</button>
+                <p class="hint" id="prefsHint" role="status" aria-live="polite"></p>
+              </div>
+            </section>
+
+            <section class="panel">
+              <h3 class="panel__title">Backup</h3>
+              <div class="actions">
+                <button class="btn btn--primary" id="exportJson" type="button">Export JSON</button>
+                <label class="btn btn--ghost filebtn">
+                  Import JSON
+                  <input id="importJson" type="file" accept="application/json" />
+                </label>
+              </div>
+              <p class="hint">Export is a full backup. Import will merge by ID.</p>
+            </section>
+          </div>
+
+          <div class="settings-col">
+            <section class="panel">
+              <h3 class="panel__title">Categories</h3>
+              <form id="categoryForm" class="form form--row">
+                <label class="field">
+                  <span class="field__label">New category</span>
+                  <input id="categoryName" maxlength="24" placeholder="e.g. Coffee" required />
+                </label>
+                <button class="btn btn--primary" type="submit">Add</button>
+                <p class="hint" id="categoryHint" role="status" aria-live="polite"></p>
+              </form>
+              <div class="divider"></div>
+              <div id="categoryList" class="list"></div>
+              <p class="empty" id="categoryEmpty">No categories. Add one above.</p>
+              <p class="hint">Deleting a category moves its transactions/budgets to “Other”.</p>
+            </section>
+          </div>
+        </div>
+
+        <div class="divider"></div>
+        <section class="danger">
+          <h3 class="danger__title">Danger zone</h3>
+          <p class="danger__text">This permanently deletes all your local Monvixx data on this browser.</p>
+          <button class="btn btn--danger" id="wipeAll" type="button">Wipe all data</button>
+          <p class="hint" id="wipeHint" role="status" aria-live="polite"></p>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./js/pages/settings.js"></script>
+  </body>
+</html>
+

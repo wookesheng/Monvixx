@@ -138,6 +138,9 @@ select:focus-visible, input:focus-visible, button:focus-visible{
   background: rgba(255,255,255,.04);
 }
 .tab{
+  text-decoration: none;
+  display:inline-flex;
+  align-items:center;
   border: none;
   background: transparent;
   padding: 10px 12px;
@@ -145,7 +148,7 @@ select:focus-visible, input:focus-visible, button:focus-visible{
   cursor: pointer;
   color: var(--muted);
 }
-.tab[aria-current="page"]{
+.tab[aria-current="page"], .tab.is-active{
   background: rgba(255,255,255,.08);
   color: var(--text);
 }
