@@ -247,6 +247,22 @@
             </section>
 
             <section class="panel">
+              <h3 class="panel__title">Categories</h3>
+              <form id="categoryForm" class="form form--row">
+                <label class="field">
+                  <span class="field__label">Name</span>
+                  <input id="categoryName" maxlength="24" placeholder="e.g. Coffee" required />
+                </label>
+                <button class="btn btn--primary" type="submit">Add</button>
+                <p class="hint" id="categoryHint" role="status" aria-live="polite"></p>
+              </form>
+              <div class="divider"></div>
+              <div id="categoryList" class="list"></div>
+              <p class="empty" id="categoryEmpty">No categories. Add one above.</p>
+              <p class="hint">Deleting a category moves its transactions/budgets to “Other”.</p>
+            </section>
+
+            <section class="panel">
               <h3 class="panel__title">Backup</h3>
               <div class="actions">
                 <button class="btn btn--primary" id="exportJson" type="button">Export JSON</button>

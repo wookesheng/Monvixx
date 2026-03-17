@@ -1,6 +1,7 @@
 /* Monvixx — Plain HTML/JS money tracker (local-first) */
 
 const STORAGE_KEY = "monvixx:v1";
+const OTHER_CATEGORY_ID = "cat_other";
 
 function uid() {
   // 16 chars url-safe
@@ -107,6 +108,29 @@ function getCategoryName(state, categoryId) {
   return state.categories.find((c) => c.id === categoryId)?.name ?? "Unknown";
 }
 
+function ensureOtherCategory(state) {
+  if (state.categories.some((c) => c.id === OTHER_CATEGORY_ID)) return;
+  state.categories.push({ id: OTHER_CATEGORY_ID, name: "Other" });
+}
+
+function slugIdFromName(name) {
+  const cleaned = String(name ?? "")
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^_+|_+$/g, "")
+    .slice(0, 18);
+  return cleaned ? `cat_${cleaned}` : `cat_${uid().toLowerCase()}`;
+}
+
+function uniqueCategoryId(state, baseId) {
+  const exists = new Set(state.categories.map((c) => c.id));
+  if (!exists.has(baseId)) return baseId;
+  let i = 2;
+  while (exists.has(`${baseId}_${i}`)) i++;
+  return `${baseId}_${i}`;
+}
+
 function getFilteredTransactions(state, { q, type, categoryId, monthKey }) {
   const query = (q ?? "").trim().toLowerCase();
   return state.transactions
@@ -198,6 +222,45 @@ function populateCategoriesSelect(select, state, { includeAll = false } = {}) {
     select.appendChild(opt);
   }
   if (current && [...select.options].some((o) => o.value === current)) select.value = current;
+}
+
+function renderCategories(state) {
+  const wrap = el("categoryList");
+  const empty = el("categoryEmpty");
+  ensureOtherCategory(state);
+
+  const items = [...state.categories].sort((a, b) => a.name.localeCompare(b.name));
+  wrap.innerHTML = "";
+  if (items.length === 0) {
+    empty.classList.add("is-visible");
+    return;
+  }
+  empty.classList.remove("is-visible");
+
+  for (const c of items) {
+    const row = document.createElement("div");
+    row.className = "row";
+    row.innerHTML = `
+      <div class="row__left">
+        <div class="row__title">${escapeHtml(c.name)}</div>
+        <div class="row__meta">${escapeHtml(c.id)}</div>
+      </div>
+      <div class="row__right">
+        <input class="row__input" value="${escapeHtml(c.name)}" data-action="rename-input" data-id="${escapeHtml(c.id)}" aria-label="Rename category ${escapeHtml(c.name)}" />
+        <button class="btn btn--ghost" data-action="rename" data-id="${escapeHtml(c.id)}" type="button">Rename</button>
+        <button class="iconbtn" data-action="delete-category" data-id="${escapeHtml(c.id)}" aria-label="Delete category">🗑</button>
+      </div>
+    `;
+    wrap.appendChild(row);
+  }
+}
+
+function syncCategoryUI(state) {
+  populateCategoriesSelect(el("quickAddCategory"), state);
+  populateCategoriesSelect(el("txCategory"), state, { includeAll: true });
+  populateCategoriesSelect(el("budgetCategory"), state);
+  populateCategoriesSelect(el("txDialogCategory"), state);
+  renderCategories(state);
 }
 
 function populateMonthsSelect(select, state, { includeAll = false, selected } = {}) {
@@ -387,6 +450,7 @@ function renderBudgets(state, monthKey) {
 
 function setup() {
   let state = loadState();
+  ensureOtherCategory(state);
 
   // month selects
   const monthSelect = el("monthSelect");
@@ -396,9 +460,7 @@ function setup() {
   populateMonthsSelect(txMonth, state, { includeAll: true, selected: initialMonth });
 
   // categories selects
-  populateCategoriesSelect(el("quickAddCategory"), state);
-  populateCategoriesSelect(el("txCategory"), state, { includeAll: true });
-  populateCategoriesSelect(el("budgetCategory"), state);
+  syncCategoryUI(state);
 
   // prefs
   el("currency").value = state.prefs.currency;
@@ -424,6 +486,7 @@ function setup() {
     renderDashboard(state, monthSelect.value || initialMonth);
     renderTransactions(state, filters);
     renderBudgets(state, monthSelect.value || initialMonth);
+    renderCategories(state);
   }
 
   // routing
@@ -603,6 +666,72 @@ function setup() {
     refreshAll();
   });
 
+  // settings: categories
+  el("categoryForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const hint = el("categoryHint");
+    const rawName = String(el("categoryName").value ?? "").trim();
+    const name = rawName.replace(/\s+/g, " ");
+    if (!name) return flashHint(hint, "Name is required.");
+    if (name.length > 24) return flashHint(hint, "Name is too long.");
+
+    const exists = state.categories.some((c) => c.name.toLowerCase() === name.toLowerCase());
+    if (exists) return flashHint(hint, "That category already exists.");
+
+    const id = uniqueCategoryId(state, slugIdFromName(name));
+    state.categories.push({ id, name });
+    ensureOtherCategory(state);
+    saveState(state);
+    el("categoryName").value = "";
+    flashHint(hint, "Added.");
+    syncCategoryUI(state);
+    refreshAll();
+  });
+
+  el("categoryList").addEventListener("click", (e) => {
+    const btn = e.target.closest("button");
+    if (!btn) return;
+    const action = btn.getAttribute("data-action");
+    const id = btn.getAttribute("data-id");
+    if (!action || !id) return;
+
+    if (action === "rename") {
+      const input = el("categoryList").querySelector(`input[data-action="rename-input"][data-id="${CSS.escape(id)}"]`);
+      const next = String(input?.value ?? "").trim().replace(/\s+/g, " ");
+      if (!next) return flashHint(el("categoryHint"), "Name is required.");
+      const exists = state.categories.some((c) => c.id !== id && c.name.toLowerCase() === next.toLowerCase());
+      if (exists) return flashHint(el("categoryHint"), "That name is already used.");
+      const cat = state.categories.find((c) => c.id === id);
+      if (!cat) return;
+      cat.name = next.slice(0, 24);
+      saveState(state);
+      flashHint(el("categoryHint"), "Renamed.");
+      syncCategoryUI(state);
+      refreshAll();
+      return;
+    }
+
+    if (action === "delete-category") {
+      if (id === OTHER_CATEGORY_ID) return flashHint(el("categoryHint"), "“Other” can’t be deleted.");
+      const cat = state.categories.find((c) => c.id === id);
+      if (!cat) return;
+      const ok = window.confirm(`Delete category "${cat.name}"?\n\nTransactions and budgets will move to "Other".`);
+      if (!ok) return;
+      ensureOtherCategory(state);
+      for (const t of state.transactions) {
+        if (t.categoryId === id) t.categoryId = OTHER_CATEGORY_ID;
+      }
+      for (const b of state.budgets) {
+        if (b.categoryId === id) b.categoryId = OTHER_CATEGORY_ID;
+      }
+      state.categories = state.categories.filter((c) => c.id !== id);
+      saveState(state);
+      flashHint(el("categoryHint"), "Deleted.");
+      syncCategoryUI(state);
+      refreshAll();
+    }
+  });
+
   // backup: export/import
   el("exportJson").addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(state, null, 2)], { type: "application/json" });
@@ -622,12 +751,10 @@ function setup() {
       const text = await file.text();
       const incoming = hydrateState(JSON.parse(text));
       state = mergeState(state, incoming);
+      ensureOtherCategory(state);
       saveState(state);
       // refresh selects due to possible new categories/months
-      populateCategoriesSelect(el("quickAddCategory"), state);
-      populateCategoriesSelect(el("txCategory"), state, { includeAll: true });
-      populateCategoriesSelect(el("budgetCategory"), state);
-      populateCategoriesSelect(el("txDialogCategory"), state);
+      syncCategoryUI(state);
       refreshAll();
       flashHint(el("prefsHint"), "Imported (merged).");
     } catch {
@@ -643,12 +770,11 @@ function setup() {
     if (!ok) return;
     localStorage.removeItem(STORAGE_KEY);
     state = defaultState();
+    ensureOtherCategory(state);
     saveState(state);
     el("currency").value = state.prefs.currency;
     el("weekStart").value = String(state.prefs.weekStart);
-    populateCategoriesSelect(el("quickAddCategory"), state);
-    populateCategoriesSelect(el("txCategory"), state, { includeAll: true });
-    populateCategoriesSelect(el("budgetCategory"), state);
+    syncCategoryUI(state);
     populateMonthsSelect(monthSelect, state, { selected: monthKeyFromISO(todayISO()) });
     populateMonthsSelect(txMonth, state, { includeAll: true, selected: monthKeyFromISO(todayISO()) });
     refreshAll();
