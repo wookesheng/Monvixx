@@ -239,7 +239,7 @@ function renderCategories(state) {
 
   for (const c of items) {
     const row = document.createElement("div");
-    row.className = "row";
+    row.className = "row catrow";
     row.innerHTML = `
       <div class="row__left">
         <div class="row__title">${escapeHtml(c.name)}</div>

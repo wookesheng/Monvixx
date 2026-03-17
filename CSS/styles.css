@@ -157,6 +157,20 @@ select:focus-visible, input:focus-visible, button:focus-visible{
 .grid--2{ grid-template-columns: repeat(2, minmax(0,1fr)); }
 @media (max-width: 880px){ .grid--2{ grid-template-columns: 1fr; } }
 
+.settings-layout{
+  display:grid;
+  grid-template-columns: 420px minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+.settings-col{
+  display:grid;
+  gap: 16px;
+}
+@media (max-width: 980px){
+  .settings-layout{ grid-template-columns: 1fr; }
+}
+
 .card{
   background: var(--panel);
   border: 1px solid var(--border);
@@ -284,8 +298,32 @@ select:focus-visible, input:focus-visible, button:focus-visible{
 .row__right{ display:flex; gap: 10px; align-items:center; }
 .num{ text-align:right; font-variant-numeric: tabular-nums; }
 .row__input{
-  width: min(320px, 52vw);
-  padding: 8px 10px;
+  width: min(360px, 44vw);
+  padding: 9px 10px;
+}
+
+/* Category manager row polish */
+.catrow{ align-items: stretch; }
+.catrow .row__left{
+  min-width: 140px;
+  padding-top: 2px;
+}
+.catrow .row__meta{
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  opacity: .9;
+}
+.catrow .row__right{
+  flex: 1;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.catrow .row__input{ flex: 1 1 220px; }
+@media (max-width: 540px){
+  .catrow{ flex-direction: column; }
+  .catrow .row__left{ min-width: 0; }
+  .catrow .row__right{ width: 100%; justify-content: flex-start; }
 }
 
 .filters{
