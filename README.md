@@ -1,28 +1,41 @@
-# Monvixx (HTML)
+# 💰 Monvixx
+A personal money manager & expense tracker built for learning and showcase purposes.
 
-Monvixx is a **plain HTML/CSS/JavaScript** money manager that stores data in your browser using **localStorage** (offline, no server required).
+---
 
-## Run it
+## 📖 Overview
+Monvixx is a personal finance tracking application designed to help manage income, expenses, and financial insights in a simple and visual way.
 
-### Option A (recommended): local web server
+This project was developed as part of my learning journey and portfolio to demonstrate skills in web-based development, data visualization, and UI design.
 
-From PowerShell:
+---
 
-```powershell
-cd "C:\Users\USER\Documents\Monvixx\monvixx-html"
-npx serve .
-```
+## ✨ Features
+- 📊 Track income and expenses
+- 🗂 Categorize transactions
+- 📈 Visualize financial data using charts (bar, pie, line)
+- 🔍 Filter data by category, date, or type
+- 🖥 Clean and user-friendly dashboard interface
 
-Then open the URL it prints.
+---
 
-### Option B: open the file directly
+## 📸 Screenshots
+> *(Add your application screenshots here)*
 
-Double-click `index.html`.
+Example:
+- Dashboard view
+- Charts (bar, pie, line)
+- Filter controls
 
-## What’s included
+---
 
-- Dashboard: month totals (income, expenses, net) + top spending
-- Transactions: add/edit/delete, filter by month/type/category, search
-- Budgets: monthly limits per expense category
-- Settings: currency, export/import JSON backup, wipe all data
+## 🛠 Tech Stack
+- **Html**
+- **JavaScript**
 
+---
+
+## 🚀 How to Run
+1. Clone this repository:
+   ```bash
+   git clone https://github.com/your-username/monvixx.git
