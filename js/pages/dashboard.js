@@ -44,7 +44,7 @@ function setupDashboard() {
     ctx.clearRect(0, 0, w, h);
 
     const cx = w / 2;
-    const cy = h / 2 + 2;
+    const cy = h / 2 - 2;
     const outerR = Math.min(w, h) * 0.36;
     const thickness = Math.max(12, outerR * 0.22);
     const innerR = Math.max(2, outerR - thickness);
@@ -90,18 +90,18 @@ function setupDashboard() {
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,.92)";
     ctx.font = "800 30px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText(pctDisplay == null ? "—" : `${pctDisplay}%`, cx, cy + 8);
+    ctx.fillText(pctDisplay == null ? "—" : `${pctDisplay}%`, cx, cy + 2);
 
     ctx.fillStyle = "rgba(255,255,255,.65)";
     ctx.font = "12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Budget used", cx, cy + 30);
+    ctx.fillText("Budget used", cx, cy + 28);
 
     // bottom meta line
     ctx.fillStyle = "rgba(255,255,255,.65)";
     ctx.font = "12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
     const meta =
       totalLimit > 0 ? `${formatMoney(totalUsed, state.prefs)} of ${formatMoney(totalLimit, state.prefs)}` : "No budgets yet";
-    ctx.fillText(meta, cx, h - 12);
+    ctx.fillText(meta, cx, h - 18);
   }
 
   function refresh() {
