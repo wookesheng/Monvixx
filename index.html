@@ -18,7 +18,7 @@
           <div class="brand__logo" aria-hidden="true">M</div>
           <div class="brand__text">
             <div class="brand__name">Monvixx</div>
-            <div class="brand__tag">Money manager & tracker</div>
+            <div class="brand__tag">Money Manager & Tracker</div>
           </div>
         </div>
 
@@ -59,17 +59,8 @@
               </div>
             </div>
             <div class="divider"></div>
-            <div class="progress">
-              <div class="progress__row">
-                <div>
-                  <div class="progress__label">Budget used</div>
-                  <div class="progress__meta" id="budgetMeta">No budgets yet</div>
-                </div>
-                <div class="pill" id="budgetPill">—</div>
-              </div>
-              <div class="bar" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" aria-label="Budget usage">
-                <div class="bar__fill" id="budgetBar" style="width: 0%"></div>
-              </div>
+            <div class="card-chart">
+              <canvas id="summaryChart" height="160" aria-label="Bar chart for income, expenses, and budget used"></canvas>
             </div>
           </section>
 
@@ -128,16 +119,7 @@
           </section>
         </div>
 
-        <section class="card">
-          <header class="card__header">
-            <h2 class="card__title">Overview chart</h2>
-            <div class="card__subtitle">Income, expenses, and budget usage.</div>
-          </header>
-          <canvas id="summaryChart" height="160" aria-label="Bar chart for income, expenses, and budget used"></canvas>
-          <p class="hint">Tip: change month to compare.</p>
-        </section>
-
-        <section class="card">
+        <section class="card card--spaced">
           <header class="card__header">
             <h2 class="card__title">Top spending (month)</h2>
             <div class="card__subtitle">By category.</div>

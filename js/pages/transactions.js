@@ -98,12 +98,12 @@ function setupTransactions() {
     }
   });
 
+  const txDialog = el("txDialog");
+
+  el("txDialogClose").addEventListener("click", () => txDialog.close());
+  el("txDialogCancel").addEventListener("click", () => txDialog.close());
+
   el("txDialogForm").addEventListener("submit", (e) => {
-    // If user clicked the "Cancel" button or the close icon (value="cancel"),
-    // let the dialog close without processing or saving.
-    if (e.submitter && e.submitter.value === "cancel") {
-      return; // allow native <form method="dialog"> to close the dialog
-    }
     e.preventDefault();
     const form = e.target;
     const hint = el("txDialogHint");
@@ -126,7 +126,7 @@ function setupTransactions() {
       state.transactions.push({ id: uid(), type, amount, categoryId, note, date, method, createdAt: Date.now() });
     }
     saveState(state);
-    el("txDialog").close();
+    txDialog.close();
     refresh();
   });
 

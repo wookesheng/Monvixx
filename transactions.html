@@ -18,7 +18,7 @@
           <div class="brand__logo" aria-hidden="true">M</div>
           <div class="brand__text">
             <div class="brand__name">Monvixx</div>
-            <div class="brand__tag">Money manager & tracker</div>
+            <div class="brand__tag">Money Manager & Tracker</div>
           </div>
         </div>
 
@@ -83,10 +83,10 @@
     </main>
 
     <dialog id="txDialog" class="dialog">
-      <form method="dialog" class="dialog__card" id="txDialogForm">
+      <form class="dialog__card" id="txDialogForm">
         <header class="dialog__header">
           <h2 class="dialog__title" id="txDialogTitle">New transaction</h2>
-          <button class="iconbtn" value="cancel" aria-label="Close dialog" type="submit">✕</button>
+          <button class="iconbtn" id="txDialogClose" aria-label="Close dialog" type="button">✕</button>
         </header>
 
         <div class="dialog__body">
@@ -133,8 +133,8 @@
         </div>
 
         <footer class="dialog__footer">
-          <button class="btn" value="cancel" type="submit">Cancel</button>
-          <button class="btn btn--primary" id="txDialogSave" value="default" type="submit">Save</button>
+          <button class="btn" id="txDialogCancel" type="button">Cancel</button>
+          <button class="btn btn--primary" id="txDialogSave" type="submit">Save</button>
           <p class="hint" id="txDialogHint" role="status" aria-live="polite"></p>
         </footer>
       </form>

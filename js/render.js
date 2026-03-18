@@ -52,26 +52,26 @@ export function renderDashboard(state, monthKey) {
   el("statNet").textContent = formatMoney(net, state.prefs);
 
   const budget = computeBudgetUsage(state, monthKey);
-  const meta = el("budgetMeta");
-  const pill = el("budgetPill");
-  const bar = el("budgetBar");
-  const progressEl = bar.closest(".bar");
-
-  if (budget.totalLimit <= 0) {
-    meta.textContent = "No budgets yet";
-    pill.textContent = "—";
-    bar.style.width = "0%";
-    progressEl?.setAttribute("aria-valuenow", "0");
-  } else {
-    const pct = clamp(budget.totalPct, 0, 9);
-    const pctDisplay = Math.round(clamp(pct, 0, 1.5) * 100);
-    meta.textContent = `${formatMoney(budget.totalUsed, state.prefs)} of ${formatMoney(budget.totalLimit, state.prefs)}`;
-    pill.textContent = `${pctDisplay}%`;
-    bar.style.width = `${clamp(pct, 0, 1) * 100}%`;
-    progressEl?.setAttribute("aria-valuenow", String(pctDisplay));
-
-    if (pct >= 1) bar.style.background = `linear-gradient(90deg, rgba(255,77,109,.95), rgba(255,204,102,.95))`;
-    else bar.style.background = `linear-gradient(90deg, rgba(124,92,255,.95), rgba(77,225,255,.95))`;
+  const meta = document.getElementById("budgetMeta");
+  const pill = document.getElementById("budgetPill");
+  const bar = document.getElementById("budgetBar");
+  if (meta && pill && bar) {
+    const progressEl = bar.closest(".bar");
+    if (budget.totalLimit <= 0) {
+      meta.textContent = "No budgets yet";
+      pill.textContent = "—";
+      bar.style.width = "0%";
+      progressEl?.setAttribute("aria-valuenow", "0");
+    } else {
+      const pct = clamp(budget.totalPct, 0, 9);
+      const pctDisplay = Math.round(clamp(pct, 0, 1.5) * 100);
+      meta.textContent = `${formatMoney(budget.totalUsed, state.prefs)} of ${formatMoney(budget.totalLimit, state.prefs)}`;
+      pill.textContent = `${pctDisplay}%`;
+      bar.style.width = `${clamp(pct, 0, 1) * 100}%`;
+      progressEl?.setAttribute("aria-valuenow", String(pctDisplay));
+      if (pct >= 1) bar.style.background = `linear-gradient(90deg, rgba(255,77,109,.95), rgba(255,204,102,.95))`;
+      else bar.style.background = `linear-gradient(90deg, rgba(124,92,255,.95), rgba(77,225,255,.95))`;
+    }
   }
 
   const topWrap = el("topSpending");
