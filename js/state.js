@@ -1,28 +1,34 @@
+/**
+ * Monvixx — state load/save, default and merged state. Category IDs use prefix ctg_ (not cat).
+ */
+
 import { OTHER_CATEGORY_ID, STORAGE_KEY, parseAmount, todayISO, uid } from "./utils.js";
 
+/** Default app state: MYR currency, ctg_* categories, sample transactions. */
 export function defaultState() {
   const now = todayISO();
   return {
-    prefs: { currency: "USD", weekStart: 1 },
+    prefs: { currency: "MYR", weekStart: 1 },
     categories: [
-      { id: "cat_food", name: "Food" },
-      { id: "cat_transport", name: "Transport" },
-      { id: "cat_rent", name: "Rent" },
-      { id: "cat_bills", name: "Bills" },
-      { id: "cat_shopping", name: "Shopping" },
-      { id: "cat_health", name: "Health" },
-      { id: "cat_entertainment", name: "Entertainment" },
-      { id: "cat_salary", name: "Salary" },
+      { id: "ctg_food", name: "Food" },
+      { id: "ctg_transport", name: "Transport" },
+      { id: "ctg_rent", name: "Rent" },
+      { id: "ctg_bills", name: "Bills" },
+      { id: "ctg_shopping", name: "Shopping" },
+      { id: "ctg_health", name: "Health" },
+      { id: "ctg_entertainment", name: "Entertainment" },
+      { id: "ctg_salary", name: "Salary" },
       { id: OTHER_CATEGORY_ID, name: "Other" },
     ],
     transactions: [
-      { id: uid(), type: "income", amount: 1200, categoryId: "cat_salary", note: "Starter income", date: now, method: "transfer", createdAt: Date.now() },
-      { id: uid(), type: "expense", amount: 32.5, categoryId: "cat_food", note: "Groceries", date: now, method: "card", createdAt: Date.now() },
+      { id: uid(), type: "income", amount: 1200, categoryId: "ctg_salary", note: "Starter income", date: now, method: "transfer", createdAt: Date.now() },
+      { id: uid(), type: "expense", amount: 32.5, categoryId: "ctg_food", note: "Groceries", date: now, method: "card", createdAt: Date.now() },
     ],
     budgets: [],
   };
 }
 
+/** Normalise loaded JSON into valid state; ensures "Other" category exists. */
 export function hydrateState(s) {
   const base = defaultState();
   const prefs = s?.prefs && typeof s.prefs === "object" ? { ...base.prefs, ...s.prefs } : base.prefs;
@@ -34,11 +40,13 @@ export function hydrateState(s) {
   return out;
 }
 
+/** Ensure state has the reserved "Other" category (id = ctg_other). */
 export function ensureOtherCategory(state) {
   if (state.categories.some((c) => c.id === OTHER_CATEGORY_ID)) return;
   state.categories.push({ id: OTHER_CATEGORY_ID, name: "Other" });
 }
 
+/** Load state from localStorage; returns defaultState if missing or invalid. */
 export function loadState() {
   const raw = localStorage.getItem(STORAGE_KEY);
   if (!raw) return defaultState();
@@ -50,10 +58,12 @@ export function loadState() {
   }
 }
 
+/** Persist state to localStorage. */
 export function saveState(state) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
 
+/** Merge incoming backup/import into current state by id; dedupes and validates. */
 export function mergeState(current, incoming) {
   const out = hydrateState(current);
   const inc = hydrateState(incoming);

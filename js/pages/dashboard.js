@@ -1,9 +1,14 @@
+/**
+ * Monvixx — Dashboard page: month summary, quick-add form, top spending. "View all" goes to transactions.
+ */
+
 import { el, flashHint } from "../dom.js";
 import { addTransaction, validateTransactionInput } from "../data.js";
 import { ensureOtherCategory, loadState, saveState } from "../state.js";
 import { populateCategoriesSelect, populateMonthsSelect, renderDashboard } from "../render.js";
 import { monthKeyFromISO, parseAmount, todayISO } from "../utils.js";
 
+/** Wire month select, quick-add form, and "View all" link; run initial render. */
 function setupDashboard() {
   let state = loadState();
   ensureOtherCategory(state);

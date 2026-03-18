@@ -1,4 +1,6 @@
 <!doctype html>
+
+<!-- Settings page -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -43,7 +45,8 @@
               <label class="field">
                 <span class="field__label">Currency</span>
                 <select id="currency">
-                  <option value="USD" selected>USD ($)</option>
+                  <option value="MYR" selected>MYR (RM)</option>
+                  <option value="USD">USD ($)</option>
                   <option value="EUR">EUR (€)</option>
                   <option value="GBP">GBP (£)</option>
                   <option value="IDR">IDR (Rp)</option>
@@ -94,14 +97,6 @@
             </section>
           </div>
         </div>
-
-        <div class="divider"></div>
-        <section class="danger">
-          <h3 class="danger__title">Danger zone</h3>
-          <p class="danger__text">This permanently deletes all your local Monvixx data on this browser.</p>
-          <button class="btn btn--danger" id="wipeAll" type="button">Wipe all data</button>
-          <p class="hint" id="wipeHint" role="status" aria-live="polite"></p>
-        </section>
       </section>
     </main>
 

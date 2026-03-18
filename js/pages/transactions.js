@@ -1,9 +1,14 @@
+/**
+ * Monvixx — Transactions page: list, filter, add/edit/delete via dialog.
+ */
+
 import { el, flashHint } from "../dom.js";
 import { getCategoryName, validateTransactionInput } from "../data.js";
 import { ensureOtherCategory, loadState, saveState } from "../state.js";
 import { populateCategoriesSelect, populateMonthsSelect, renderTransactions } from "../render.js";
-import { formatMoney, monthKeyFromISO, parseAmount, todayISO, uid } from "../utils.js";
+import { OTHER_CATEGORY_ID, formatMoney, monthKeyFromISO, parseAmount, todayISO, uid } from "../utils.js";
 
+/** Open the transaction dialog for create or edit; prefill form from tx if editing. */
 function openTxDialog(state, tx) {
   const dlg = el("txDialog");
   const form = el("txDialogForm");
@@ -14,7 +19,7 @@ function openTxDialog(state, tx) {
   form.type.value = tx?.type ?? "expense";
   form.amount.value = tx?.amount != null ? String(tx.amount) : "";
   populateCategoriesSelect(el("txDialogCategory"), state);
-  form.category.value = tx?.categoryId ?? state.categories[0]?.id ?? "cat_other";
+  form.category.value = tx?.categoryId ?? state.categories[0]?.id ?? OTHER_CATEGORY_ID;
   form.note.value = tx?.note ?? "";
   form.date.value = tx?.date ?? todayISO();
   form.method.value = tx?.method ?? "card";

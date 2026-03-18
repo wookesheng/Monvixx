@@ -1,11 +1,15 @@
+/**
+ * Monvixx — Settings page: preferences, backup import/export, category CRUD. Danger zone removed.
+ */
+
 import { el, flashHint } from "../dom.js";
 import { moveCategoryToOther, slugIdFromName, uniqueCategoryId } from "../data.js";
 import { ensureOtherCategory, loadState, mergeState, saveState } from "../state.js";
 import { populateCategoriesSelect, renderCategories } from "../render.js";
-import { OTHER_CATEGORY_ID, STORAGE_KEY, todayISO } from "../utils.js";
+import { OTHER_CATEGORY_ID, todayISO } from "../utils.js";
 
+/** Refresh category dropdowns (if present) and the category list. */
 function syncCategoryUI(state) {
-  // These selects might not exist on Settings page; guard just in case markup changes later.
   for (const id of ["quickAddCategory", "txCategory", "budgetCategory", "txDialogCategory"]) {
     const node = document.getElementById(id);
     if (node && node.tagName === "SELECT") populateCategoriesSelect(node, state, { includeAll: id === "txCategory" });
@@ -115,19 +119,6 @@ function setupSettings() {
     } finally {
       e.target.value = "";
     }
-  });
-
-  el("wipeAll").addEventListener("click", () => {
-    const ok = window.confirm("Wipe ALL Monvixx data from this browser?\n\nThis cannot be undone.");
-    if (!ok) return;
-    localStorage.removeItem(STORAGE_KEY);
-    state = loadState(); // default state after wipe
-    ensureOtherCategory(state);
-    saveState(state);
-    el("currency").value = state.prefs.currency;
-    el("weekStart").value = String(state.prefs.weekStart);
-    syncCategoryUI(state);
-    flashHint(el("wipeHint"), "Wiped.");
   });
 }
 

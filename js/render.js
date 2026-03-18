@@ -1,7 +1,12 @@
+/**
+ * Monvixx — Render helpers: populate dropdowns and render dashboard, transactions, budgets, categories.
+ */
+
 import { el } from "./dom.js";
 import { clamp, escapeHtml, formatMoney, monthKeyFromISO } from "./utils.js";
 import { computeBudgetUsage, getCategoryName, getFilteredTransactions, getMonthOptions, monthSummary } from "./data.js";
 
+/** Fill a <select> with categories; optionally add an "All" option. */
 export function populateCategoriesSelect(select, state, { includeAll = false } = {}) {
   const current = select.value;
   select.innerHTML = "";
@@ -20,6 +25,7 @@ export function populateCategoriesSelect(select, state, { includeAll = false } =
   if (current && [...select.options].some((o) => o.value === current)) select.value = current;
 }
 
+/** Fill a <select> with month keys (YYYY-MM); optional "All" and pre-selected value. */
 export function populateMonthsSelect(select, state, { includeAll = false, selected } = {}) {
   const months = getMonthOptions(state);
   select.innerHTML = "";
@@ -38,6 +44,7 @@ export function populateMonthsSelect(select, state, { includeAll = false, select
   if (selected && [...select.options].some((o) => o.value === selected)) select.value = selected;
 }
 
+/** Update dashboard: stats, budget bar, top spending list for the given month. */
 export function renderDashboard(state, monthKey) {
   const { income, expenses, net } = monthSummary(state, monthKey);
   el("statIncome").textContent = formatMoney(income, state.prefs);
@@ -102,6 +109,7 @@ export function renderDashboard(state, monthKey) {
   }
 }
 
+/** Fill transactions table with filtered rows; show empty message if none. */
 export function renderTransactions(state, filters) {
   const tbody = el("txTableBody");
   const empty = el("txEmpty");
@@ -134,6 +142,7 @@ export function renderTransactions(state, filters) {
   }
 }
 
+/** Fill budget list with usage bars and delete buttons. */
 export function renderBudgets(state, monthKey) {
   const wrap = el("budgetList");
   const empty = el("budgetEmpty");
@@ -174,6 +183,7 @@ export function renderBudgets(state, monthKey) {
   }
 }
 
+/** Fill Settings category list: name, id, rename input, delete button. */
 export function renderCategories(state) {
   const wrap = el("categoryList");
   const empty = el("categoryEmpty");

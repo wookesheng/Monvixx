@@ -1,9 +1,14 @@
+/**
+ * Monvixx — Budgets page: set/edit monthly limits per category, delete budget.
+ */
+
 import { el, flashHint } from "../dom.js";
 import { getCategoryName } from "../data.js";
 import { ensureOtherCategory, loadState, saveState } from "../state.js";
 import { populateCategoriesSelect, renderBudgets } from "../render.js";
 import { monthKeyFromISO, parseAmount, todayISO, uid } from "../utils.js";
 
+/** Wire budget form and list; render current month usage. */
 function setupBudgets() {
   let state = loadState();
   ensureOtherCategory(state);

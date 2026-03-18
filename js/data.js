@@ -1,5 +1,10 @@
+/**
+ * Monvixx — data helpers: filters, summaries, category id generation. Category IDs use prefix ctg_.
+ */
+
 import { OTHER_CATEGORY_ID, clamp, escapeHtml, formatMoney, monthKeyFromISO, parseAmount, todayISO, uid } from "./utils.js";
 
+/** Unique month keys from transactions plus current month, sorted newest first. */
 export function getMonthOptions(state) {
   const months = new Set(state.transactions.map((t) => monthKeyFromISO(t.date)));
   months.add(monthKeyFromISO(todayISO()));
@@ -7,10 +12,12 @@ export function getMonthOptions(state) {
   return arr.map((m) => ({ key: m, label: m }));
 }
 
+/** Display name for a category id. */
 export function getCategoryName(state, categoryId) {
   return state.categories.find((c) => c.id === categoryId)?.name ?? "Unknown";
 }
 
+/** Filter and sort transactions by query, type, category, month. */
 export function getFilteredTransactions(state, { q, type, categoryId, monthKey }) {
   const query = (q ?? "").trim().toLowerCase();
   return state.transactions
@@ -26,6 +33,7 @@ export function getFilteredTransactions(state, { q, type, categoryId, monthKey }
     .sort((a, b) => (b.date === a.date ? (b.createdAt ?? 0) - (a.createdAt ?? 0) : b.date.localeCompare(a.date)));
 }
 
+/** Income, expenses, net and list of tx for a given month. */
 export function monthSummary(state, monthKey) {
   const tx = state.transactions.filter((t) => monthKeyFromISO(t.date) === monthKey);
   let income = 0;
@@ -37,6 +45,7 @@ export function monthSummary(state, monthKey) {
   return { income, expenses, net: income - expenses, tx };
 }
 
+/** Per-budget usage and totals for a month. */
 export function computeBudgetUsage(state, monthKey) {
   const expenseByCat = new Map();
   for (const t of state.transactions) {
@@ -57,6 +66,7 @@ export function computeBudgetUsage(state, monthKey) {
   return { budgets, totalLimit, totalUsed, totalPct };
 }
 
+/** Generate a safe category id from display name; prefix is ctg_ (not cat). */
 export function slugIdFromName(name) {
   const cleaned = String(name ?? "")
     .trim()
@@ -64,9 +74,10 @@ export function slugIdFromName(name) {
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "")
     .slice(0, 18);
-  return cleaned ? `cat_${cleaned}` : `cat_${uid().toLowerCase()}`;
+  return cleaned ? `ctg_${cleaned}` : `ctg_${uid().toLowerCase()}`;
 }
 
+/** Return baseId if unused, otherwise baseId_2, baseId_3, … */
 export function uniqueCategoryId(state, baseId) {
   const exists = new Set(state.categories.map((c) => c.id));
   if (!exists.has(baseId)) return baseId;
@@ -75,10 +86,12 @@ export function uniqueCategoryId(state, baseId) {
   return `${baseId}_${i}`;
 }
 
+/** Append a new transaction to state.transactions. */
 export function addTransaction(state, { type, amount, categoryId, note, date, method }) {
   state.transactions.push({ id: uid(), type, amount, categoryId, note, date, method, createdAt: Date.now() });
 }
 
+/** Validate quick-add / dialog fields; returns error string or "". */
 export function validateTransactionInput({ type, amount, categoryId, date }) {
   if (!date || !/^\d{4}-\d{2}-\d{2}$/.test(date)) return "Please choose a valid date.";
   if (!categoryId) return "Please choose a category.";
@@ -87,6 +100,7 @@ export function validateTransactionInput({ type, amount, categoryId, date }) {
   return "";
 }
 
+/** Reassign all transactions and budgets from categoryId to ctg_other. */
 export function moveCategoryToOther(state, categoryId) {
   for (const t of state.transactions) {
     if (t.categoryId === categoryId) t.categoryId = OTHER_CATEGORY_ID;
