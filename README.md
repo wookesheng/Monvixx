@@ -20,21 +20,22 @@ This project was developed as part of my learning journey and portfolio to demon
 ---
 
 ## Screenshots
-> *(Add your application screenshots here)*
+- Dashboard Page
+  
+![Alt text](capture/Monvixx_homepage.png)
 
-Example:
-- Dashboard view
-- Filter controls
+- Transactions Page
+
+![Alt text](capture/Monvixx_transactionpage.png)
+
+- Budgets Page
+
+![Alt text](capture/Monvixx_budgetpage.png)
+
+- Settings Page
+
+![Alt text](capture/Monvixx_settingpage.png)
 
 ---
 
-## Tech Stack
-- **Html**
-- **JavaScript**
 
----
-
-## How to Run
-1. Clone this repository:
-   ```bash
-   git clone https://github.com/your-username/monvixx.git
