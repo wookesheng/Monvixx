@@ -35,88 +35,60 @@ function setupDashboard() {
     canvas.height = Math.floor(cssHeight * dpr);
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-    const { income, expenses } = monthSummary(state, monthKey);
     const { totalLimit, totalUsed } = computeBudgetUsage(state, monthKey);
-    const budgetPct = totalLimit > 0 ? clamp(totalUsed / totalLimit, 0, 1.5) : 0;
+    const budgetPct = totalLimit > 0 ? clamp(totalUsed / totalLimit, 0, 9) : 0;
+    const pctDisplay = totalLimit > 0 ? Math.round(clamp(budgetPct, 0, 1.5) * 100) : null;
 
-    const items = [
-      { label: "Income", value: income, valueLabel: formatMoney(income, state.prefs), color: "rgba(77,225,255,.85)" },
-      { label: "Expenses", value: expenses, valueLabel: formatMoney(expenses, state.prefs), color: "rgba(255,77,109,.85)" },
-      {
-        label: "Budget used",
-        value: Math.round(clamp(budgetPct, 0, 1) * 100),
-        valueLabel: totalLimit > 0 ? `${Math.round(clamp(budgetPct, 0, 1.5) * 100)}%` : "—",
-        color: "rgba(124,92,255,.85)",
-        isPercent: true,
-      },
-    ];
-
-    const padding = 16;
     const w = cssWidth;
     const h = cssHeight;
     ctx.clearRect(0, 0, w, h);
 
+    // soft panel background
     ctx.fillStyle = "rgba(255,255,255,.04)";
     ctx.fillRect(0, 0, w, h);
 
-    const chartTop = 14;
-    const chartBottom = h - 22;
-    const chartHeight = chartBottom - chartTop;
-    const chartLeft = padding;
-    const chartRight = w - padding;
-    const chartWidth = chartRight - chartLeft;
+    const cx = w / 2;
+    const cy = h / 2 + 2;
+    const outerR = Math.min(w, h) * 0.32;
+    const thickness = Math.max(10, outerR * 0.28);
+    const innerR = Math.max(2, outerR - thickness);
 
-    // grid lines
-    ctx.strokeStyle = "rgba(255,255,255,.08)";
-    ctx.lineWidth = 1;
-    for (let i = 1; i <= 3; i++) {
-      const y = chartTop + (chartHeight * i) / 3;
-      ctx.beginPath();
-      ctx.moveTo(chartLeft, y);
-      ctx.lineTo(chartRight, y);
-      ctx.stroke();
-    }
+    const start = -Math.PI / 2;
+    const pctClamped = clamp(budgetPct, 0, 1);
+    const end = start + 2 * Math.PI * pctClamped;
 
-    const maxAmount = Math.max(1, income, expenses);
-    const barGap = 14;
-    const barWidth = (chartWidth - barGap * (items.length - 1)) / items.length;
-
-    ctx.font = "12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.textAlign = "center";
-
-    items.forEach((item, idx) => {
-      const x = chartLeft + idx * (barWidth + barGap);
-      const baseY = chartBottom;
-      const normalized = item.isPercent ? clamp(item.value / 100, 0, 1) : clamp(item.value / maxAmount, 0, 1);
-      const barH = Math.round(chartHeight * normalized);
-      const y = baseY - barH;
-
-      // bar
-      ctx.fillStyle = item.color;
-      const radius = 10;
-      const bw = Math.max(8, barWidth);
-      roundRect(ctx, x, y, bw, barH, radius);
-      ctx.fill();
-
-      // value label
-      ctx.fillStyle = "rgba(255,255,255,.92)";
-      ctx.fillText(item.valueLabel, x + bw / 2, y - 6);
-
-      // x label
-      ctx.fillStyle = "rgba(255,255,255,.65)";
-      ctx.fillText(item.label, x + bw / 2, h - 6);
-    });
-  }
-
-  function roundRect(ctx, x, y, w, h, r) {
-    const radius = Math.min(r, w / 2, h / 2);
+    // track
+    ctx.lineCap = "round";
+    ctx.lineWidth = thickness;
+    ctx.strokeStyle = "rgba(255,255,255,.10)";
     ctx.beginPath();
-    ctx.moveTo(x + radius, y);
-    ctx.arcTo(x + w, y, x + w, y + h, radius);
-    ctx.arcTo(x + w, y + h, x, y + h, radius);
-    ctx.arcTo(x, y + h, x, y, radius);
-    ctx.arcTo(x, y, x + w, y, radius);
-    ctx.closePath();
+    ctx.arc(cx, cy, (outerR + innerR) / 2, 0, 2 * Math.PI);
+    ctx.stroke();
+
+    // progress ring
+    const ringColor =
+      budgetPct >= 1 ? "rgba(255,77,109,.92)" : budgetPct >= 0.85 ? "rgba(255,204,102,.92)" : "rgba(124,92,255,.92)";
+    ctx.strokeStyle = ringColor;
+    ctx.beginPath();
+    ctx.arc(cx, cy, (outerR + innerR) / 2, start, end);
+    ctx.stroke();
+
+    // center text
+    ctx.textAlign = "center";
+    ctx.fillStyle = "rgba(255,255,255,.92)";
+    ctx.font = "700 26px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText(pctDisplay == null ? "—" : `${pctDisplay}%`, cx, cy + 6);
+
+    ctx.fillStyle = "rgba(255,255,255,.65)";
+    ctx.font = "12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText("Budget used", cx, cy + 26);
+
+    // bottom meta line
+    ctx.fillStyle = "rgba(255,255,255,.65)";
+    ctx.font = "12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    const meta =
+      totalLimit > 0 ? `${formatMoney(totalUsed, state.prefs)} of ${formatMoney(totalLimit, state.prefs)}` : "No budgets yet";
+    ctx.fillText(meta, cx, h - 10);
   }
 
   function refresh() {
