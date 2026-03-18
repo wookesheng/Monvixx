@@ -202,6 +202,19 @@ select:focus-visible, input:focus-visible, button:focus-visible{
 }
 .panel__title{ margin: 0 0 10px; font-size: 14px; }
 
+/* About panel on Settings: app name and tagline */
+.panel--about .about__name{
+  margin: 0 0 4px;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+.panel--about .about__tagline{
+  margin: 0;
+  font-size: 13px;
+  color: var(--muted);
+}
+
 .divider{ height: 1px; background: var(--border); margin: 14px 0; }
 
 .stats{
@@ -261,6 +274,8 @@ select:focus-visible, input:focus-visible, button:focus-visible{
 .field--inline{ display:flex; align-items:center; gap: 8px; }
 .field__label{ color: var(--muted); font-size: 12px; }
 .actions{ display:flex; gap: 10px; align-items:center; margin-top: 4px; }
+.actions--spaced{ margin-top: 14px; }
+.actions--wrap{ flex-wrap: wrap; }
 .spacer{ flex: 1 1 auto; }
 .hint{ margin: 0; color: var(--muted); font-size: 12px; min-height: 16px; }
 

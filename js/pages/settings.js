@@ -1,12 +1,28 @@
 /**
- * Monvixx — Settings page: preferences, backup import/export, category CRUD. Danger zone removed.
+ * Monvixx — Settings page: preferences, about, backup & export (JSON/CSV), category CRUD.
  */
 
 import { el, flashHint } from "../dom.js";
-import { moveCategoryToOther, slugIdFromName, uniqueCategoryId } from "../data.js";
+import { getCategoryName, moveCategoryToOther, slugIdFromName, uniqueCategoryId } from "../data.js";
 import { ensureOtherCategory, loadState, mergeState, saveState } from "../state.js";
 import { populateCategoriesSelect, renderCategories } from "../render.js";
 import { OTHER_CATEGORY_ID, todayISO } from "../utils.js";
+
+/** Build CSV string for all transactions (Date, Type, Category, Note, Amount, Payment method). */
+function buildTransactionsCsv(state) {
+  const rows = [...state.transactions].sort((a, b) => b.date.localeCompare(a.date) || (b.createdAt ?? 0) - (a.createdAt ?? 0));
+  const escapeCsv = (v) => {
+    const s = String(v ?? "");
+    if (s.includes(",") || s.includes('"') || s.includes("\n") || s.includes("\r")) return `"${s.replace(/"/g, '""')}"`;
+    return s;
+  };
+  const header = "Date,Type,Category,Note,Amount,Payment method";
+  const lines = rows.map((t) => {
+    const amount = t.type === "income" ? t.amount : -t.amount;
+    return [t.date, t.type, getCategoryName(state, t.categoryId), t.note ?? "", amount, t.method ?? ""].map(escapeCsv).join(",");
+  });
+  return "\uFEFF" + header + "\n" + lines.join("\n");
+}
 
 /** Refresh category dropdowns (if present) and the category list. */
 function syncCategoryUI(state) {
@@ -30,29 +46,41 @@ function setupSettings() {
     const currency = el("currency").value;
     const weekStart = Number(el("weekStart").value);
     state.prefs.currency = currency;
-    state.prefs.weekStart = weekStart === 0 ? 0 : 1;
+    state.prefs.weekStart = Number.isFinite(weekStart) && weekStart >= 0 && weekStart <= 6 ? weekStart : 1;
     saveState(state);
     flashHint(el("prefsHint"), "Saved.");
   });
 
   el("categoryForm").addEventListener("submit", (e) => {
     e.preventDefault();
-    const hint = el("categoryHint");
-    const rawName = String(el("categoryName").value ?? "").trim();
+    const hintEl = document.getElementById("categoryHint");
+    const nameInput = document.getElementById("categoryName");
+    const rawName = String(nameInput?.value ?? "").trim();
     const name = rawName.replace(/\s+/g, " ");
-    if (!name) return flashHint(hint, "Name is required.");
-    if (name.length > 24) return flashHint(hint, "Name is too long.");
-
+    if (!name) {
+      if (hintEl) flashHint(hintEl, "Name is required.");
+      return;
+    }
+    if (name.length > 24) {
+      if (hintEl) flashHint(hintEl, "Name is too long.");
+      return;
+    }
     const exists = state.categories.some((c) => c.name.toLowerCase() === name.toLowerCase());
-    if (exists) return flashHint(hint, "That category already exists.");
-
-    const id = uniqueCategoryId(state, slugIdFromName(name));
-    state.categories.push({ id, name });
-    ensureOtherCategory(state);
-    saveState(state);
-    el("categoryName").value = "";
-    flashHint(hint, "Added.");
-    syncCategoryUI(state);
+    if (exists) {
+      if (hintEl) flashHint(hintEl, "That category already exists.");
+      return;
+    }
+    try {
+      const id = uniqueCategoryId(state, slugIdFromName(name));
+      state.categories.push({ id, name });
+      ensureOtherCategory(state);
+      saveState(state);
+      if (nameInput) nameInput.value = "";
+      if (hintEl) flashHint(hintEl, "Added.");
+      syncCategoryUI(state);
+    } catch (err) {
+      if (hintEl) flashHint(hintEl, "Something went wrong. Try again.");
+    }
   });
 
   el("categoryList").addEventListener("click", (e) => {
@@ -97,6 +125,18 @@ function setupSettings() {
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
     a.download = `monvixx-backup-${todayISO()}.json`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(a.href);
+  });
+
+  el("exportCsv").addEventListener("click", () => {
+    const csv = buildTransactionsCsv(state);
+    const blob = new Blob([csv], { type: "text/csv; charset=utf-8" });
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = `monvixx-transactions-${todayISO()}.csv`;
     document.body.appendChild(a);
     a.click();
     a.remove();

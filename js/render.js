@@ -183,11 +183,12 @@ export function renderBudgets(state, monthKey) {
   }
 }
 
-/** Fill Settings category list: name, id, rename input, delete button. */
+/** Fill Settings category list: name, rename input, delete button. No-op if elements missing. */
 export function renderCategories(state) {
-  const wrap = el("categoryList");
-  const empty = el("categoryEmpty");
-  const items = [...state.categories].sort((a, b) => a.name.localeCompare(b.name));
+  const wrap = document.getElementById("categoryList");
+  const empty = document.getElementById("categoryEmpty");
+  if (!wrap || !empty) return;
+  const items = [...(state.categories || [])].sort((a, b) => a.name.localeCompare(b.name));
   wrap.innerHTML = "";
 
   if (items.length === 0) {
@@ -202,7 +203,6 @@ export function renderCategories(state) {
     row.innerHTML = `
       <div class="row__left">
         <div class="row__title">${escapeHtml(c.name)}</div>
-        <div class="row__meta">${escapeHtml(c.id)}</div>
       </div>
       <div class="row__right">
         <input class="row__input" value="${escapeHtml(c.name)}" data-action="rename-input" data-id="${escapeHtml(c.id)}" aria-label="Rename category ${escapeHtml(c.name)}" />

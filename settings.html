@@ -7,7 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Settings — Monvixx</title>
     <meta name="description" content="Monvixx settings: preferences, categories, and backup." />
-    <link rel="stylesheet" href="CSS/styles.css" />
+    <link rel="stylesheet" href="css/styles.css" />
   </head>
   <body>
     <a class="skip-link" href="#main">Skip to content</a>
@@ -35,7 +35,6 @@
       <section class="card">
         <header class="card__header">
           <h2 class="card__title">Settings</h2>
-          <div class="card__subtitle">Data, currency, and backup.</div>
         </header>
 
         <div class="settings-layout">
@@ -56,28 +55,40 @@
               <label class="field">
                 <span class="field__label">Start of week</span>
                 <select id="weekStart">
-                  <option value="1" selected>Monday</option>
                   <option value="0">Sunday</option>
+                  <option value="1" selected>Monday</option>
+                  <option value="2">Tuesday</option>
+                  <option value="3">Wednesday</option>
+                  <option value="4">Thursday</option>
+                  <option value="5">Friday</option>
+                  <option value="6">Saturday</option>
                 </select>
               </label>
-              <div class="actions">
+              <div class="actions actions--spaced">
                 <button class="btn" id="savePrefs" type="button">Save</button>
                 <p class="hint" id="prefsHint" role="status" aria-live="polite"></p>
               </div>
             </section>
 
             <section class="panel">
-              <h3 class="panel__title">Backup</h3>
-              <div class="actions">
+              <h3 class="panel__title">Backup &amp; export</h3>
+              <div class="actions actions--wrap">
                 <button class="btn btn--primary" id="exportJson" type="button">Export JSON</button>
+                <button class="btn btn--primary" id="exportCsv" type="button">Export CSV</button>
                 <label class="btn btn--ghost filebtn">
                   Import JSON
                   <input id="importJson" type="file" accept="application/json" />
                 </label>
               </div>
-              <p class="hint">Export is a full backup. Import will merge by ID.</p>
+              <p class="hint">Full backup (JSON). Transactions (CSV). Import merges by ID.</p>
             </section>
           </div>
+
+          <section class="panel panel--about">
+            <h3 class="panel__title">About</h3>
+            <p class="about__name">Monvixx</p>
+            <p class="about__tagline">Money manager &amp; tracker</p>
+          </section>
 
           <div class="settings-col">
             <section class="panel">
