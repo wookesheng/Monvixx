@@ -76,7 +76,6 @@
           <section class="card">
             <header class="card__header">
               <h2 class="card__title">Quick add</h2>
-              <div class="card__subtitle">Capture a transaction in seconds.</div>
             </header>
 
             <form id="quickAddForm" class="form">
@@ -128,6 +127,15 @@
             </form>
           </section>
         </div>
+
+        <section class="card">
+          <header class="card__header">
+            <h2 class="card__title">Overview chart</h2>
+            <div class="card__subtitle">Income, expenses, and budget usage.</div>
+          </header>
+          <canvas id="summaryChart" height="160" aria-label="Bar chart for income, expenses, and budget used"></canvas>
+          <p class="hint">Tip: change month to compare.</p>
+        </section>
 
         <section class="card">
           <header class="card__header">

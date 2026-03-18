@@ -99,6 +99,11 @@ function setupTransactions() {
   });
 
   el("txDialogForm").addEventListener("submit", (e) => {
+    // If user clicked the "Cancel" button or the close icon (value="cancel"),
+    // let the dialog close without processing or saving.
+    if (e.submitter && e.submitter.value === "cancel") {
+      return; // allow native <form method="dialog"> to close the dialog
+    }
     e.preventDefault();
     const form = e.target;
     const hint = el("txDialogHint");
