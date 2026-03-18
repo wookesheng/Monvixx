@@ -43,52 +43,65 @@ function setupDashboard() {
     const h = cssHeight;
     ctx.clearRect(0, 0, w, h);
 
-    // soft panel background
-    ctx.fillStyle = "rgba(255,255,255,.04)";
-    ctx.fillRect(0, 0, w, h);
-
     const cx = w / 2;
     const cy = h / 2 + 2;
-    const outerR = Math.min(w, h) * 0.32;
-    const thickness = Math.max(10, outerR * 0.28);
+    const outerR = Math.min(w, h) * 0.36;
+    const thickness = Math.max(12, outerR * 0.22);
     const innerR = Math.max(2, outerR - thickness);
 
     const start = -Math.PI / 2;
     const pctClamped = clamp(budgetPct, 0, 1);
     const end = start + 2 * Math.PI * pctClamped;
 
+    // subtle spotlight behind ring
+    const spot = ctx.createRadialGradient(cx, cy - outerR * 0.2, 6, cx, cy, outerR * 1.2);
+    spot.addColorStop(0, "rgba(255,255,255,.06)");
+    spot.addColorStop(0.5, "rgba(255,255,255,.02)");
+    spot.addColorStop(1, "rgba(255,255,255,0)");
+    ctx.fillStyle = spot;
+    ctx.beginPath();
+    ctx.arc(cx, cy, outerR * 1.25, 0, 2 * Math.PI);
+    ctx.fill();
+
     // track
     ctx.lineCap = "round";
     ctx.lineWidth = thickness;
-    ctx.strokeStyle = "rgba(255,255,255,.10)";
+    ctx.strokeStyle = "rgba(255,255,255,.12)";
     ctx.beginPath();
     ctx.arc(cx, cy, (outerR + innerR) / 2, 0, 2 * Math.PI);
     ctx.stroke();
 
     // progress ring
-    const ringColor =
-      budgetPct >= 1 ? "rgba(255,77,109,.92)" : budgetPct >= 0.85 ? "rgba(255,204,102,.92)" : "rgba(124,92,255,.92)";
-    ctx.strokeStyle = ringColor;
+    const ringBase =
+      budgetPct >= 1 ? [255, 77, 109] : budgetPct >= 0.85 ? [255, 204, 102] : [124, 92, 255];
+    const grad = ctx.createLinearGradient(cx - outerR, cy - outerR, cx + outerR, cy + outerR);
+    grad.addColorStop(0, `rgba(${ringBase[0]},${ringBase[1]},${ringBase[2]},.55)`);
+    grad.addColorStop(0.55, `rgba(${ringBase[0]},${ringBase[1]},${ringBase[2]},.95)`);
+    grad.addColorStop(1, "rgba(77,225,255,.55)");
+    ctx.strokeStyle = grad;
+    ctx.shadowColor = `rgba(${ringBase[0]},${ringBase[1]},${ringBase[2]},.22)`;
+    ctx.shadowBlur = 14;
     ctx.beginPath();
     ctx.arc(cx, cy, (outerR + innerR) / 2, start, end);
     ctx.stroke();
+    ctx.shadowBlur = 0;
 
     // center text
     ctx.textAlign = "center";
     ctx.fillStyle = "rgba(255,255,255,.92)";
-    ctx.font = "700 26px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText(pctDisplay == null ? "—" : `${pctDisplay}%`, cx, cy + 6);
+    ctx.font = "800 30px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
+    ctx.fillText(pctDisplay == null ? "—" : `${pctDisplay}%`, cx, cy + 8);
 
     ctx.fillStyle = "rgba(255,255,255,.65)";
     ctx.font = "12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
-    ctx.fillText("Budget used", cx, cy + 26);
+    ctx.fillText("Budget used", cx, cy + 30);
 
     // bottom meta line
     ctx.fillStyle = "rgba(255,255,255,.65)";
     ctx.font = "12px ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial";
     const meta =
       totalLimit > 0 ? `${formatMoney(totalUsed, state.prefs)} of ${formatMoney(totalLimit, state.prefs)}` : "No budgets yet";
-    ctx.fillText(meta, cx, h - 10);
+    ctx.fillText(meta, cx, h - 12);
   }
 
   function refresh() {
